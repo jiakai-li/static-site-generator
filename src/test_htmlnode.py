@@ -34,6 +34,8 @@ class TestHTMLNode(unittest.TestCase):
 
         self.assertEqual(node.props_to_html(), "")
 
+
+class TestLeafNode(unittest.TestCase):
     def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")
         self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
@@ -46,9 +48,7 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_leaf_to_html_empty_tag(self):
         node = LeafNode("", "Hello, world!")
-        self.assertEqual(
-            node.to_html(), 'Hello, world!'
-        )
+        self.assertEqual(node.to_html(), "Hello, world!")
 
     def test_leaf_to_html_empty_value(self):
         node = LeafNode("", "")
