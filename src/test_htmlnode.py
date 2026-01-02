@@ -70,3 +70,12 @@ class TestParentNode(unittest.TestCase):
             parent_node.to_html(),
             "<div><span><b>grandchild</b></span></div>",
         )
+
+    def test_to_html_with_grandchildren_with_props(self):
+        grandchild_node = LeafNode("b", "grandchild", props={"href": "https://www.google.com"})
+        child_node = ParentNode("span", [grandchild_node], props={"attr": "val"})
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            '<div><span attr="val"><b href="https://www.google.com">grandchild</b></span></div>',
+        )
