@@ -3,6 +3,7 @@ from typing import Optional
 
 
 class TextType(Enum):
+    TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
