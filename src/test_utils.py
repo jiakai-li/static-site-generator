@@ -8,6 +8,7 @@ from utils import (
     split_nodes_image,
     split_nodes_link,
     text_node_to_html_node,
+    text_to_textnodes,
 )
 
 
@@ -176,6 +177,19 @@ class TestUtilsSplitNodesDelimiter(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             _ = split_nodes_delimiter([node], "`", TextType.CODE)
+
+    def test_delim_bold_and_italic(self):
+        node = TextNode("**bold** and _italic_", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+        self.assertEqual(
+            [
+                TextNode("bold", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+            ],
+            new_nodes,
+        )
 
 
 class TestUtilsExtractImageAndLink(unittest.TestCase):
@@ -357,4 +371,27 @@ class TestUtilsExtractImageAndLink(unittest.TestCase):
         self.assertListEqual(
             new_nodes,
             [text_node, bold_node],
+        )
+
+
+class TestUtilsExtractTextNodes(unittest.TestCase):
+    def test_extract_from_text(self):
+        markdown_text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        text_nodes = text_to_textnodes(markdown_text)
+        self.assertListEqual(
+            text_nodes,
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode(
+                    "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+                ),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
         )

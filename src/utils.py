@@ -120,3 +120,13 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
         new_nodes.extend(parsed_nodes)
 
     return new_nodes
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    parsed_nodes = [TextNode(text, TextType.TEXT)]
+    parsed_nodes = split_nodes_delimiter(parsed_nodes, '`', TextType.CODE)
+    parsed_nodes = split_nodes_delimiter(parsed_nodes, '**', TextType.BOLD)
+    parsed_nodes = split_nodes_delimiter(parsed_nodes, '_', TextType.ITALIC)
+    parsed_nodes = split_nodes_image(parsed_nodes)
+    parsed_nodes = split_nodes_link(parsed_nodes)
+    return parsed_nodes
