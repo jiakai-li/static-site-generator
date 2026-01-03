@@ -1,10 +1,10 @@
 import unittest
 
 from textnode import TextNode, TextType
-from utils import text_node_to_html_node, split_nodes_delimiter
+from utils import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 
-class TestUtils(unittest.TestCase):
+class TestUtilsTextNodeToHTMLNode(unittest.TestCase):
     def test_text(self):
         node = TextNode("This is a text node", TextType.TEXT)
         html_node = text_node_to_html_node(node)
@@ -169,3 +169,21 @@ class TestUtilsSplitNodesDelimiter(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             _ = split_nodes_delimiter([node], "`", TextType.CODE)
+
+
+class TestUtilsExtractImageAndLink(unittest.TestCase):
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual(matches, [("image", "https://i.imgur.com/zjjcJKZ.png")])
+
+    def test_extract_markdown_links(self):
+        no_matches = extract_markdown_links(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        matches = extract_markdown_links(
+            "This is text with an [link](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual(no_matches, [])
+        self.assertListEqual(matches, [("link", "https://i.imgur.com/zjjcJKZ.png")])
