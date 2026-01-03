@@ -13,9 +13,41 @@ def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
         case TextType.CODE:
             return LeafNode(tag="code", value=text_node.text)
         case TextType.LINK:
-            return LeafNode(tag="a", value=text_node.text, props={"href": text_node.url or ""})
+            return LeafNode(
+                tag="a", value=text_node.text, props={"href": text_node.url or ""}
+            )
         case TextType.IMAGE:
-            return LeafNode(tag="img", value="", props={
-                "src": text_node.url or "",
-                "alt": text_node.text
-            })
+            return LeafNode(
+                tag="img",
+                value="",
+                props={"src": text_node.url or "", "alt": text_node.text},
+            )
+
+
+def split_nodes_delimiter(
+    old_nodes: list[TextNode], delimiter: str, text_type: TextType
+) -> list[TextNode]:
+    new_nodes = []
+
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+
+        parts = old_node.text.split(delimiter)
+        if len(parts) % 2 != 1:
+            raise ValueError(f"{old_node.text} is malformed markdown string")
+
+        parsed_nodes = []
+        for i in range(len(parts)):
+            if not parts[i]:
+                continue
+
+            if i % 2 == 0:
+                parsed_nodes.append(TextNode(parts[i], TextType.TEXT))
+            else:
+                parsed_nodes.append(TextNode(parts[i], text_type))
+
+        new_nodes.extend(parsed_nodes)
+
+    return new_nodes
